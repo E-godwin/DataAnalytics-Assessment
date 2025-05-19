@@ -32,7 +32,7 @@ Get customers who:
 - `total_deposits` (in Naira)
 
 
-## Small Challenges I Faced
+## Challenges I Faced
 
 - First, I needed to be sure I was using the right flags to identify savings (`is_regular_savings`) and investment (`is_a_fund`) plans.
 - Also had to remember that all money values are in **Kobo**, so I converted to Naira by dividing by 100.
@@ -40,5 +40,38 @@ Get customers who:
 - Used `DISTINCT` where needed to avoid double counting from joins.
 
 ---
+## Question 2 – Transaction Frequency Analysis
 
-## Repo Structure
+### Business Goal
+The finance team wants to analyze how often customers transact so they can segment users into categories like "frequent", "moderate", and "low" users. This can guide targeted communication and product strategy.
+
+### Task
+Calculate the average number of transactions per customer per month and classify them as:
+
+- **High Frequency** (≥10 transactions/month)  
+- **Medium Frequency** (3–9 transactions/month)  
+- **Low Frequency** (≤2 transactions/month)
+
+### My Approach
+
+1. **Step 1 – Get each customer's transaction history**  
+   I used the `savings_savingsaccount` table to count how many transactions each customer (`owner_id`) made and to calculate how many months they’ve been active. I used `TIMESTAMPDIFF` between their first and last transaction month, and added `+1` to avoid division by zero.
+
+2. **Step 2 – Calculate average monthly transactions**  
+   I divided each customer’s total number of transactions by their active months to get the `avg_txn_per_month`.
+
+3. **Step 3 – Categorize customers**  
+   I used a `CASE` statement to assign customers into High, Medium, or Low frequency groups based on their average monthly transactions.
+
+4. **Step 4 – Group and summarize**  
+   I grouped the results by frequency category to count how many customers fall in each category and the average transactions per category.
+
+5. **Optional Filter**  
+   I added a commented-out line that filters only `'successful'` transactions. Depending on what the business wants (all attempts vs. successful ones), this line can be included or excluded.
+
+6. **Sorting**  
+   I used `FIELD()` to display results in a logical order: High → Medium → Low.
+
+### Challenges
+At first, only “Low Frequency” was showing. I discovered that many customers have limited transaction data in the sample set. This was not an error in the logic, just a reflection of the data. I decided to leave the transaction status filter commented out to make the result more inclusive and flexible.
+
