@@ -12,7 +12,7 @@ WITH customer_transactions AS (
         -- Count of total transactions
         COUNT(*) AS total_transactions
     FROM savings_savingsaccount sa
-    -- We're including all transactions (optional: filter by status if needed)
+    -- I am including all transactions (optional: filter by status if needed)
     GROUP BY sa.owner_id
 ),
 
@@ -36,7 +36,7 @@ clv_calc AS (
         ROUND((ct.total_transaction_value / 1000), 2) AS total_profit,  -- since 0.1% = /1000
 
         -- CLV = (total_transactions / tenure_months) * 12 * avg_profit_per_transaction
-        -- Note: We first calculate avg_profit_per_transaction = total_profit / total_transactions
+        -- Note: I first calculate avg_profit_per_transaction = total_profit / total_transactions
         -- Then use the formula above
         ROUND(
             (
