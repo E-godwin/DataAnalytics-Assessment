@@ -109,3 +109,31 @@ Needed to differentiate Savings from Investments using is_regular_savings = 1 an
 Ensured we excluded deleted or archived plans using filters like is_deleted = 0 and is_archived = 0.
 
 Made sure only the last inflow was used for the date comparison by grouping by plan_id.
+
+---
+## Question 4: Customer Lifetime Value (CLV) Estimation
+
+### Approach:
+
+- Created two CTEs:
+  - `customer_transactions` to aggregate total transactions and total confirmed transaction value for each customer.
+  - `customer_tenure` to calculate account tenure in months from signup date to current date.
+- Calculated average profit per transaction assuming 0.1% profit margin (hence dividing total confirmed amount by 1000).
+- Computed estimated CLV using the formula:  
+  **CLV = (total_transactions / tenure_months) * 12 * avg_profit_per_transaction**  
+  This annualizes the monthly profit contribution.
+- Used `NULLIF` to prevent division by zero errors for customers with zero tenure or transactions.
+- Joined customer transaction data with tenure data to get comprehensive CLV metrics.
+- Sorted the results by estimated CLV in descending order to highlight the highest value customers.
+
+### Challenges:
+
+- Handling customers with zero months of tenure or zero transactions required careful use of `NULLIF` to avoid division errors.
+- Assumptions about profit per transaction simplified calculations but might not capture real-world complexity.
+- Limited to savings transactions; investment transactions were not considered due to lack of explicit info.
+- Ensured that profit calculation accounts for amounts stored in kobo by dividing by 1000 (to get the correct percentage).
+
+### Summary:
+
+This query provides a practical and simplified way to estimate Customer Lifetime Value (CLV) based on transaction activity and account tenure, useful for marketing segmentation and business strategy.
+
