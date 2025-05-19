@@ -75,3 +75,37 @@ Calculate the average number of transactions per customer per month and classify
 ### Challenges
 At first, only “Low Frequency” was showing. I discovered that many customers have limited transaction data in the sample set. This was not an error in the logic, just a reflection of the data. I decided to leave the transaction status filter commented out to make the result more inclusive and flexible.
 
+---
+## Question 3: Account Inactivity Alert
+
+### Objective
+Identify active accounts (either savings or investment) that have not received any inflow transactions in over a year (365 days).
+
+### Approach
+1. I combined data from both the savings_savingsaccount and plans_plan tables.
+
+2. Grouped transactions by plan to find the most recent inflow (MAX(transaction_date)).
+
+3. Filtered for only active and non-deleted plans using flags like is_deleted, is_archived, and is_goal_achieved.
+
+4. Used DATEDIFF to compute the number of days since the last inflow.
+
+5. Filtered the result to only show plans where inactivity_days > 365.
+
+### Why This Matters
+This insight is useful for operational monitoring. It allows the team to flag dormant accounts and possibly reach out to re-engage customers who haven’t saved or invested recently.
+
+### Output Columns
+Column	Description
+plan_id	Unique identifier for the savings/investment plan
+owner_id	User ID of the plan owner
+type	'Savings' or 'Investment'
+last_transaction_date	Date of the most recent inflow transaction
+inactivity_days	Number of days since that transaction
+
+### Challenges
+Needed to differentiate Savings from Investments using is_regular_savings = 1 and is_a_fund = 1.
+
+Ensured we excluded deleted or archived plans using filters like is_deleted = 0 and is_archived = 0.
+
+Made sure only the last inflow was used for the date comparison by grouping by plan_id.
